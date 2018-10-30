@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css">
+        <title>Quotes page</title>
+    </head>
+    <body class="container">
+        <div class="container" align="right">
+            {% if 'user_id' in request.session %}
+                <a href="{% url 'quotes:myaccount' id=user.id %}">Edit My Account</a>
+                <a href="{% url 'quotes:logout' %}" class="button">Logout</a>
+            {% endif %}
+        </div>
+        <h1>Welcome {{user.first_name}}!</h1>
+        <div class="container">
+            <div class="row">
+                <div class="six columns">
+                    <h2>Quotes</h2>
+                        <table>
+                            <thead>
+                                <tr>
+                                <th>Quote</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for quote in quotes %}
+                                    <tr>
+                                    <td>{{ quote.author }} : {{ quote.quote }} <br>
+                                        Posted By: <a href="{% url 'quotes:userquotes' quote.user.id %}">{{quote.user.first_name}} {{quote.user.last_name}} </a><br>
+                                    {% if request.session.user_id == quote.user.id %}
+                                        <a href="{% url 'quotes:delete' id=quote.id %}" class="button">Delete</a>
+                                    {% endif %}
+                                    </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table> 
+                    </div>
+                    <div class="six columns">
+                        <h2>Add a Quote!</h2>
+                        {% if messages %}
+                            <ul class="messages">
+                            {% for message in messages %}
+                                <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+                            {% endfor %}
+                            </ul>
+                        {% endif %}
+                    <div class="container">
+                        <form action="{% url 'quotes:addquote' %}" method="post">
+                            {% csrf_token %}
+                            <label for="author">Author:</label>
+                                <input type="text" name="author"><br>
+                                <label for="quote">Quote:</label>
+                                <input type="text" name="quote"><br>
+                                <input type="hidden" name="user" value="{{ request.session.user_id }}">
+                                <input type="submit" value="Add Quote"><br>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </body>
+</html>
+
+
